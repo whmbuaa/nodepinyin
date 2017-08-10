@@ -1,0 +1,12 @@
+{
+  "name": "nodepinyin",
+  "version": "0.0.0",
+  "description": "node addon for pinyin",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "node test.js"
+  },
+  "gypfile": true
+ 
+}
