@@ -18,22 +18,34 @@ const Pinyin* Pinyin::getInstance(){
 
 void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<list<string>> & output) const {
 
+
+    string strNonChinese;
     for(unsigned charIndex  = 0 ; charIndex < len; charIndex++) {
 
-        list<string> listOfSingleCharPinyin;
         if(m_mapDict.count(inputString[charIndex]) == 0 ){
 
             // translate unicode to utf8
             char  charArrayUtf8Buff[6];
             int utf8Len = unicodeToUtf8((uint32_t)inputString[charIndex],charArrayUtf8Buff,sizeof(charArrayUtf8Buff));
             if(utf8Len > 0) {
-                listOfSingleCharPinyin.push_back(string(charArrayUtf8Buff ,utf8Len));
+                strNonChinese.append(charArrayUtf8Buff,utf8Len);
             }
 
         } else {
+            if(strNonChinese.length() > 0) {
+                output.push_back(list<string>(1, strNonChinese));
+                strNonChinese.clear();
+            }
+            list<string> listOfSingleCharPinyin;
             listOfSingleCharPinyin.push_back(m_mapDict[inputString[charIndex]]);
+            output.push_back(listOfSingleCharPinyin);
         }
-        output.push_back(listOfSingleCharPinyin);
+
+    }
+
+    //in case no chinese character at the end
+    if(strNonChinese.length() > 0) {
+         output.push_back(list<string>(1, strNonChinese));
     }
 
 }
