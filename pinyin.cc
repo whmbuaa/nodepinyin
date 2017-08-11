@@ -34,8 +34,8 @@ void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<lis
             // replace phonetic
             replaceChar(strPinyinOfSingleChar);
             // divide pinyin string and remove duplication
-
-            listOfSingleCharPinyin.push_back(strPinyinOfSingleChar);
+            divideString(listOfSingleCharPinyin,strPinyinOfSingleChar, u',');
+//            listOfSingleCharPinyin.push_back(strPinyinOfSingleChar);
 
             output.push_back(listOfSingleCharPinyin);
         }
@@ -49,7 +49,7 @@ void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<lis
 
 }
 
-u16string & Pinyin::replaceChar(u16string& src){
+u16string & Pinyin::replaceChar(u16string& strSrc){
     map<char16_t, char16_t> mapPhonetic = getPhoneticMap();
     for(map<char16_t, char16_t>::const_iterator iterPhoneticMap = mapPhonetic.begin(); iterPhoneticMap != mapPhonetic.end(); iterPhoneticMap++ ) {
 
@@ -58,15 +58,27 @@ u16string & Pinyin::replaceChar(u16string& src){
 
         size_t startPos = 0;
         size_t foundPos = 0 ;
-        while( ( foundPos = src.find(charToReplace, startPos)) != string::npos) {
-            src.replace(foundPos,1,1,charReplaceWith);
-            startPos = foundPos++;
+        while( ( foundPos = strSrc.find(charToReplace, startPos)) != string::npos) {
+            strSrc.replace(foundPos,1,1,charReplaceWith);
+            startPos = foundPos+1;
         }
-
     }
-    return src;
+    return strSrc;
 }
+list<u16string> & Pinyin::divideString(list<u16string> & listOutput,u16string strSrc, char16_t delimit){
 
+    size_t startPos = 0 ;
+    size_t foundPos = 0 ;
+    while( ( foundPos = strSrc.find(delimit, startPos)) != string::npos) {
+        listOutput.push_back(strSrc.substr(startPos, foundPos-startPos));
+        startPos = foundPos+1;
+    }
+
+    if(startPos < strSrc.length()){
+        listOutput.push_back(strSrc.substr(startPos, strSrc.length()-startPos));
+    }
+    return listOutput;
+}
 /*****************************************************************************
  * 将一个字符的Unicode(UCS-2和UCS-4)编码转换成UTF-8编码.
  *

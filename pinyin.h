@@ -16,7 +16,8 @@ class Pinyin
 
         Pinyin(map<int,const char*> & dict);
         static unsigned unicodeToUtf8(const uint32_t unic, char *pOutput,  const unsigned outSize);
-        static u16string & replaceChar(u16string& src);
+        static u16string & replaceChar(u16string& stringSrc);
+        static list<u16string> & divideString(list<u16string> & listOutput,u16string strSrc, char16_t delimit);
 	public :
 	    static const Pinyin* getInstance();
 	    void convert (const uint16_t  inputString[] , const unsigned len, list<list<u16string>> & output) const;
