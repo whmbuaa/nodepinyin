@@ -1,7 +1,7 @@
 #include "pinyin.h"
 #include "dict_zi.h"
 
-#include <string.h>
+#include <set>
 
 Pinyin* Pinyin::m_pInstance = NULL;
 
@@ -35,7 +35,6 @@ void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<lis
             replaceChar(strPinyinOfSingleChar);
             // divide pinyin string and remove duplication
             divideString(listOfSingleCharPinyin,strPinyinOfSingleChar, u',');
-//            listOfSingleCharPinyin.push_back(strPinyinOfSingleChar);
 
             output.push_back(listOfSingleCharPinyin);
         }
@@ -50,6 +49,7 @@ void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<lis
 }
 
 u16string & Pinyin::replaceChar(u16string& strSrc){
+
     map<char16_t, char16_t> mapPhonetic = getPhoneticMap();
     for(map<char16_t, char16_t>::const_iterator iterPhoneticMap = mapPhonetic.begin(); iterPhoneticMap != mapPhonetic.end(); iterPhoneticMap++ ) {
 
@@ -69,13 +69,18 @@ list<u16string> & Pinyin::divideString(list<u16string> & listOutput,u16string st
 
     size_t startPos = 0 ;
     size_t foundPos = 0 ;
-    while( ( foundPos = strSrc.find(delimit, startPos)) != string::npos) {
-        listOutput.push_back(strSrc.substr(startPos, foundPos-startPos));
+    set<u16string> strSet;  // to remove the duplicated pinyin
+     while( ( foundPos = strSrc.find(delimit, startPos)) != string::npos) {
+        strSet.insert(strSrc.substr(startPos, foundPos-startPos));
         startPos = foundPos+1;
     }
 
     if(startPos < strSrc.length()){
-        listOutput.push_back(strSrc.substr(startPos, strSrc.length()-startPos));
+        strSet.insert(strSrc.substr(startPos, strSrc.length()-startPos));
+    }
+
+    for(set<u16string>::const_iterator iterStrSet = strSet.begin(); iterStrSet != strSet.end(); iterStrSet++) {
+        listOutput.push_back(*iterStrSet);
     }
     return listOutput;
 }
