@@ -16,28 +16,20 @@ const Pinyin* Pinyin::getInstance(){
     return m_pInstance;
 }
 
-void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<list<string>> & output) const {
+void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<list<u16string>> & output) const {
 
-
-    string strNonChinese;
+    u16string strNonChinese;
     for(unsigned charIndex  = 0 ; charIndex < len; charIndex++) {
 
         if(m_mapDict.count(inputString[charIndex]) == 0 ){
-
-            // translate unicode to utf8
-            char  charArrayUtf8Buff[6];
-            int utf8Len = unicodeToUtf8((uint32_t)inputString[charIndex],charArrayUtf8Buff,sizeof(charArrayUtf8Buff));
-            if(utf8Len > 0) {
-                strNonChinese.append(charArrayUtf8Buff,utf8Len);
-            }
-
+            strNonChinese.append((char16_t *)&inputString[charIndex],1);
         } else {
             if(strNonChinese.length() > 0) {
-                output.push_back(list<string>(1, strNonChinese));
+                output.push_back(list<u16string>(1, strNonChinese));
                 strNonChinese.clear();
             }
-            list<string> listOfSingleCharPinyin;
-            listOfSingleCharPinyin.push_back(m_mapDict[inputString[charIndex]]);
+            list<u16string> listOfSingleCharPinyin;
+            listOfSingleCharPinyin.push_back((char16_t *)m_mapDict[inputString[charIndex]]);
             output.push_back(listOfSingleCharPinyin);
         }
 
@@ -45,7 +37,7 @@ void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<lis
 
     //in case no chinese character at the end
     if(strNonChinese.length() > 0) {
-         output.push_back(list<string>(1, strNonChinese));
+         output.push_back(list<u16string>(1, strNonChinese));
     }
 
 }

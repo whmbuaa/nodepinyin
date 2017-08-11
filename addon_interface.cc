@@ -36,21 +36,21 @@ void getPinyin(const v8::FunctionCallbackInfo<Value>& args) {
 
 
     // convert hanzi to pinyin
-    list<list<string>> listCharPinyin;
+    list<list<u16string>> listCharPinyin;
     Pinyin::getInstance()->convert(pArrayStringUnicode,inputString.length(), listCharPinyin);
 
     // organize output
     int charIndex = 0 ;
-    for(list<list<string>>::const_iterator charIter  = listCharPinyin.begin(); charIter != listCharPinyin.end(); charIter++) {
+    for(list<list<u16string>>::const_iterator charIter  = listCharPinyin.begin(); charIter != listCharPinyin.end(); charIter++) {
 
-        const list<string> & listSingleCharPinyin = *charIter;
+        const list<u16string> & listSingleCharPinyin = *charIter;
 
         // organize pinyin array for one char
         Local<Array> arraySingleCharPinyin = Array::New(isolate);
         int pinyinIndex = 0 ;
-        for(list<string>::const_iterator pinyinIter = listSingleCharPinyin.begin(); pinyinIter != listSingleCharPinyin.end(); pinyinIter++) {
+        for(list<u16string>::const_iterator pinyinIter = listSingleCharPinyin.begin(); pinyinIter != listSingleCharPinyin.end(); pinyinIter++) {
 
-            Local<String> singlePinyin = String::NewFromUtf8(isolate,(const char *)((*pinyinIter).c_str()));
+            Local<String> singlePinyin = String::NewFromTwoByte(isolate,(uint16_t *)((*pinyinIter).c_str()));
             arraySingleCharPinyin->Set(pinyinIndex,singlePinyin);
 
             pinyinIndex++;
