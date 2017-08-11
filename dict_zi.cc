@@ -5,6 +5,38 @@ using namespace std;
 #define ARRAYCOUNT(a) (sizeof(a) / sizeof(a[0]))
 
 static map<int,const char*> s_mapDict ;
+static map<char16_t,char16_t> s_mapPhonetic ;
+
+// 带音标字符。
+static char16_t  s_arrayPhoneticData[] = {
+  u'ā', u'a',
+  u'á', u'a',
+  u'ǎ', u'a',
+  u'à', u'a',
+  u'ē', u'e',
+  u'é', u'e',
+  u'ě', u'e',
+  u'è', u'e',
+  u'ō', u'o',
+  u'ó', u'o',
+  u'ǒ', u'o',
+  u'ò', u'o',
+  u'ī', u'i',
+  u'í', u'i',
+  u'ǐ', u'i',
+  u'ì', u'i',
+  u'ū', u'u',
+  u'ú', u'u',
+  u'ǔ', u'u',
+  u'ù', u'u',
+  u'ü', u'v',
+  u'ǘ', u'v',
+  u'ǚ', u'v',
+  u'ǜ', u'v',
+  u'ń', u'n',
+  u'ň', u'n',
+  u'', u'm'
+};
 
 static const void * s_arrayData[] = {
    (const void *)0x3400 ,  u"qiū" /* 㐀 */,
@@ -41266,4 +41298,19 @@ map<int, const char*>& getDict() {
         initDict(s_mapDict);
     }
     return s_mapDict;
+}
+
+static void initPhoneticMap(map<char16_t, char16_t> & phoneticMap){
+
+    for(unsigned i = 0 ; i < ARRAYCOUNT(s_arrayPhoneticData)/2; i++ ){
+        s_mapPhonetic[s_arrayPhoneticData[2*i]] = s_arrayPhoneticData[2*i+1] ;
+    }
+}
+
+map<char16_t, char16_t>& getPhoneticMap() {
+
+    if( s_mapPhonetic.size() == 0 ) {
+        initPhoneticMap(s_mapPhonetic);
+    }
+    return s_mapPhonetic;
 }

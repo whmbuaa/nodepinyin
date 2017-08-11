@@ -29,7 +29,14 @@ void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<lis
                 strNonChinese.clear();
             }
             list<u16string> listOfSingleCharPinyin;
-            listOfSingleCharPinyin.push_back((char16_t *)m_mapDict[inputString[charIndex]]);
+
+            u16string strPinyinOfSingleChar((char16_t *)m_mapDict[inputString[charIndex]]);
+            // replace phonetic
+            replaceChar(strPinyinOfSingleChar);
+            // divide pinyin string and remove duplication
+
+            listOfSingleCharPinyin.push_back(strPinyinOfSingleChar);
+
             output.push_back(listOfSingleCharPinyin);
         }
 
@@ -40,6 +47,24 @@ void Pinyin::convert (const uint16_t inputString[], const unsigned len, list<lis
          output.push_back(list<u16string>(1, strNonChinese));
     }
 
+}
+
+u16string & Pinyin::replaceChar(u16string& src){
+    map<char16_t, char16_t> mapPhonetic = getPhoneticMap();
+    for(map<char16_t, char16_t>::const_iterator iterPhoneticMap = mapPhonetic.begin(); iterPhoneticMap != mapPhonetic.end(); iterPhoneticMap++ ) {
+
+        char16_t charToReplace = iterPhoneticMap->first;
+        char16_t charReplaceWith = iterPhoneticMap->second;
+
+        size_t startPos = 0;
+        size_t foundPos = 0 ;
+        while( ( foundPos = src.find(charToReplace, startPos)) != string::npos) {
+            src.replace(foundPos,1,1,charReplaceWith);
+            startPos = foundPos++;
+        }
+
+    }
+    return src;
 }
 
 /*****************************************************************************

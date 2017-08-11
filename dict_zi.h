@@ -6,5 +6,5 @@
 using namespace std ;
 
 map<int, const char*>& getDict();
-
+map<char16_t, char16_t>& getPhoneticMap();
 #endif
